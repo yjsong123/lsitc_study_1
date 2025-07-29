@@ -1,31 +1,31 @@
 import datetime
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
-from src.domain.answer.answer_model import Answer
+from src.domain.answer.answer_model import AnswerResponse
 
 
-class Question(BaseModel):
+class QuestionResponse(BaseModel):
     id: int
     subject: str
     content: str
     create_date: datetime.datetime
-    answers: list[Answer] = []
+    answers: list[AnswerResponse] = []
 
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
 
 class QuestionCreate(BaseModel):
     subject: str
     content: str
 
-    @field_validator('subject', 'content')
+    @field_validator("subject", "content")
     def not_empty(cls, v):
         if not v or not v.strip():
-            raise ValueError('빈 값은 허용되지 않습니다.')
+            raise ValueError("빈 값은 허용되지 않습니다.")
         return v
+
 
 class QuestionList(BaseModel):
     total: int = 0
-    question_list: list[Question] = []
+    question_list: list[QuestionResponse] = []
